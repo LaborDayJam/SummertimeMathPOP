@@ -17,6 +17,7 @@ public class RisingFactsManager : MonoBehaviour
 	public GameObject       roundObject;
 	public GameObject 		startObject;
 	public Text				roundText;
+	private BubbleFactory   bubbleFactory;
 	private GameSettings 	gameSettings;
 
 	private float 			currTimer = 0f;
@@ -25,10 +26,12 @@ public class RisingFactsManager : MonoBehaviour
 	private float			maxWaitTime = 3f;
 	private int 			numofrounds = 11;
 	private bool 			answered = false;
-	private bool			isBoy = false;
+	private bool 			isBoy = false;
+	private bool 			hasReset = false;
 	public int 				gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
+	public int 				prevState = -1;
 	public int 				playerLevel = 1;
-	public int 				round = 1;
+	public int 				roundNum = 1;
 	public int 				lastRound = 0;
 	public int 				score = 0;
 
@@ -41,7 +44,7 @@ public class RisingFactsManager : MonoBehaviour
 		gameSettings = GameSettings.instance;
 
 		Bubble.OnPop += new Bubble.BubbleEvent(AnsweredStatus);
-		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
+		//GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
 		Time.timeScale = 1;
 
 	}
@@ -49,20 +52,24 @@ public class RisingFactsManager : MonoBehaviour
 	void OnDestroy()
 	{
 		Bubble.OnPop -= new Bubble.BubbleEvent(AnsweredStatus);	
-		GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
+		//GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
 	}
 	void Start()
 	{
-		playerLevel = 1;//gameSettings.PlayerLevel;
+		playerLevel = gameSettings.PlayerLevel;
+		bubbleFactory = GameObject.FindGameObjectWithTag("Factory").GetComponent<BubbleFactory>();	
 	}
 
-	void RisingUpdate()
+	void Update()
 	{
-		if(lastRound != round)
+		if(prevState != gameState)
 		{
+			prevState = gameState;
 			StateSwitch();
-			lastRound = round;
 		}
+
+		if(gameState == 1)
+			StateSwitch();
 	
 		if(OnUpdate != null)
 			OnUpdate(gameState);
@@ -76,17 +83,17 @@ public class RisingFactsManager : MonoBehaviour
 		{
 			case 0 :{PreGame();}break;
 			case 1 :{RunningGame();}break;
-			case 2 :{PostGame();}break;
-			case 3 :{EndGame();}break;
-			case 4 :{PausedGame();}break;
+			case 2 :{EndGame();}break;
+			case 3 :{PausedGame();}break;
 		}
 	}
 	
 	private void PreGame()
 	{
 		roundObject.SetActive(true);
-		roundText.text = "Round " + round.ToString();
+		roundText.text = "Round " + roundNum.ToString();
 		startObject.SetActive(true);
+		lastRound = 0;
 		StartCoroutine(WaitForRound(maxWaitTime));
 	}
 	
@@ -104,46 +111,28 @@ public class RisingFactsManager : MonoBehaviour
 		}
 		else if(answered)
 		{
-			if(currTimer > 0)
+			if(currTimer > 0 && !hasReset)
 			{
-				GameObject[] bubbles = GameObject.FindGameObjectsWithTag("bubbles");
-				
-				// find bubbles here goin 
-				foreach(GameObject bubble in bubbles)
-				{
-					if(bubble.GetComponent<Bubble>().theOne)
-					{
-						bubble.GetComponent<Bubble>().enabled = false;
-						bubble.transform.localPosition = Vector3.zero;
-						StartCoroutine(WaitToPop(bubble));
-					}
-					else 
-						Destroy(bubble);
-				}
-				
+				bubbleFactory.canSpawn = false;
+				//play annimation
+				//play Sound;
+				ResetGame();
+			
 				
 			}
 			else
 			{
-				ResetGame();
+				if(!hasReset)
+					ResetGame();
 			}
 		}
 		else 
 		{
-			ResetGame();
+			if(!hasReset)
+				ResetGame();
 		}
 	}
-	
-	private void PostGame()
-	{
-		
-		Debug.Log("increasing round");
-		if(lastRound != round)
-			round++;
-		
-		lastRound = round;
-		gameState = 3;
-	}
+
 	
 	private void AnsweredStatus(bool correct)
 	{
@@ -157,20 +146,24 @@ public class RisingFactsManager : MonoBehaviour
 
 	private void EndGame()
 	{
-		if(round < numofrounds)
+		if(lastRound != roundNum)
 		{
-			Debug.Log("Waiting to start new round");
-			currTimer = 0;
-			gameState = 0;
-			lastRound = 0;
-			answered = false;
-		}
-		else
-		{
-			Debug.Log("end game here");
+			roundNum++;
+			if(roundNum < numofrounds)
+			{
+				Debug.Log("Waiting to start new round");
+				currTimer = 0;
+				answered = false;
+				hasReset = false;
+				gameState = 0;
+				lastRound = roundNum;
+			}
+			else
+			{
+				Debug.Log("end game here");
+			}
 		}
 	}
-	
 	
 	private void PausedGame(){}
 	
@@ -179,13 +172,19 @@ public class RisingFactsManager : MonoBehaviour
 	private void ResetGame()
 	{
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("bubbles");
-		
+		hasReset = true;
 		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)
 		{
-			Destroy(bubble);
+			if(bubble.GetComponent<Bubble>().theOne)
+			{
+				bubble.GetComponent<Bubble>().enabled = false;
+				bubble.transform.localPosition = Vector3.zero;
+				StartCoroutine(WaitToPop(bubble));
+			}
+			else 
+				Destroy(bubble);
 		}
-		StartCoroutine("WaitToEnd", 2f);
 	}
 
 	
@@ -194,23 +193,12 @@ public class RisingFactsManager : MonoBehaviour
 	{
 		yield return new WaitForSeconds(2);
 		Destroy(bubble);
-		gameState =2;
+		gameState = 2;
 	}
 
-	IEnumerator WaitToEnd(float time)
-	{
-		yield return new WaitForSeconds(time);
-		gameState =2;
-	}
-	IEnumerator WaitForStart(float time)
-	{
-		yield return new WaitForSeconds(time);
-	}
 	IEnumerator WaitForRound(float time)
 	{
-		Debug.Log("Entered");
 		yield return new WaitForSeconds(time);
-		Debug.Log("Exited");
 		roundObject.SetActive(false);
 		startObject.SetActive(false);
 		gameState = 1;

@@ -34,8 +34,10 @@ public class GameManager : MonoBehaviour
 	void Update () 
 	{
 		if(lastState != gamesState)
+		{
 			SwitchStates();
-
+			lastState = gamesState;
+		}
 		if(OnUpdate != null)
 			OnUpdate();
 	}

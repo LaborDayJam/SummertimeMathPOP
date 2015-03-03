@@ -8,6 +8,8 @@ public class BubbleFactory : MonoBehaviour
 	public GameObject 	spawnPosition;
 	public Button[]	  	bubbleButtons;
 
+	public bool 		canSpawn = true;
+
 	private float 		spawnTime = .5f;
 	private float 		timer = 0f;
 	private int[] 		otherNumbers;
@@ -58,6 +60,7 @@ public class BubbleFactory : MonoBehaviour
 			case 0:
 			{
 				bubbleCount = 0;
+				canSpawn = true;
 			}break;
 			case 1:
 			{
@@ -69,33 +72,35 @@ public class BubbleFactory : MonoBehaviour
 
 	private void SpawnBubbles()
 	{
-	
-		if(timer < spawnTime)
-			timer += Time.deltaTime;
-		else if(bubbleCount < maxBubbleCount && theAnswer != 0 )
+		if(canSpawn)
 		{
-			Button clone = Instantiate(bubbleButtons[0], spawnPosition.transform.position, Quaternion.identity)as Button;
-			clone.transform.SetParent(bubbleContainer.transform);
-			if(bubbleCount == answerBubble)
+			if(timer < spawnTime)
+				timer += Time.deltaTime;
+			else if(bubbleCount < maxBubbleCount && theAnswer != 0 )
 			{
-				clone.GetComponent<Bubble>().SetBubble(bubbleCount,theAnswer,true);
-			}
-			else 
-			{
-				int theNum = theAnswer;
-				while(theNum == theAnswer)
+				Button clone = Instantiate(bubbleButtons[0], spawnPosition.transform.position, Quaternion.identity)as Button;
+				clone.transform.SetParent(bubbleContainer.transform);
+				if(bubbleCount == answerBubble)
 				{
-					theNum = Random.Range(GameSettings.instance.PlayerLevel - 1, (GameSettings.instance.PlayerLevel * 5)*5);
+					clone.GetComponent<Bubble>().SetBubble(bubbleCount,theAnswer,true);
 				}
-				clone.GetComponent<Bubble>().SetBubble(bubbleCount, theNum, false);
+				else 
+				{
+					int theNum = theAnswer;
+					while(theNum == theAnswer)
+					{
+						theNum = Random.Range(GameSettings.instance.PlayerLevel - 1, (GameSettings.instance.PlayerLevel * 5)*5);
+					}
+					clone.GetComponent<Bubble>().SetBubble(bubbleCount, theNum, false);
+				}
+				bubbleCount++;
+				timer = 0;
 			}
-			bubbleCount++;
-			timer = 0;
-		}
-		else
-		{
-			answerBubble = Random.Range(0,6);
-			theAnswer = 0;
+			else
+			{
+				answerBubble = Random.Range(0,6);
+				theAnswer = 0;
+			}
 		}
 	}
 }
