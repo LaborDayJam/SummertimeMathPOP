@@ -17,12 +17,12 @@ public class Bubble : MonoBehaviour
 
 	void Awake()
 	{
-		//RisingFactsUIManager.OnPuased += new RisingFactsUIManager.PuaseEvent(OnPuased);
+		RisingFactsUIManager.OnPuased += new RisingFactsUIManager.PuaseEvent(OnPuased);
 	}
 
 	void OnDestroy()
 	{
-		//RisingFactsUIManager.OnPuased -= new RisingFactsUIManager.PuaseEvent(OnPuased);
+		RisingFactsUIManager.OnPuased -= new RisingFactsUIManager.PuaseEvent(OnPuased);
 	}
 
 	void OnPuased(bool playing)

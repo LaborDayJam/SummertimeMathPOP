@@ -15,7 +15,6 @@ public class RisingFactsManager : MonoBehaviour
 
 
 	public GameObject       roundObject;
-	public GameObject 		startObject;
 	public Text				roundText;
 	private BubbleFactory   bubbleFactory;
 	private GameSettings 	gameSettings;
@@ -44,15 +43,16 @@ public class RisingFactsManager : MonoBehaviour
 		gameSettings = GameSettings.instance;
 
 		Bubble.OnPop += new Bubble.BubbleEvent(AnsweredStatus);
-		//GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
-		Time.timeScale = 1;
+		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
+		
+	
 
 	}
 	
 	void OnDestroy()
 	{
 		Bubble.OnPop -= new Bubble.BubbleEvent(AnsweredStatus);	
-		//GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
+		GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
 	}
 	void Start()
 	{
@@ -60,7 +60,7 @@ public class RisingFactsManager : MonoBehaviour
 		bubbleFactory = GameObject.FindGameObjectWithTag("Factory").GetComponent<BubbleFactory>();	
 	}
 
-	void Update()
+	void RisingUpdate()
 	{
 		if(prevState != gameState)
 		{
@@ -92,7 +92,6 @@ public class RisingFactsManager : MonoBehaviour
 	{
 		roundObject.SetActive(true);
 		roundText.text = "Round " + roundNum.ToString();
-		startObject.SetActive(true);
 		lastRound = 0;
 		StartCoroutine(WaitForRound(maxWaitTime));
 	}
@@ -137,10 +136,11 @@ public class RisingFactsManager : MonoBehaviour
 	private void AnsweredStatus(bool correct)
 	{
 		answered = true;
-	
+		
 		if(correct)
 		{
-			score+=5;
+			score+=5 * playerLevel;
+			
 		}
 	}
 
@@ -200,7 +200,6 @@ public class RisingFactsManager : MonoBehaviour
 	{
 		yield return new WaitForSeconds(time);
 		roundObject.SetActive(false);
-		startObject.SetActive(false);
 		gameState = 1;
 	}
 

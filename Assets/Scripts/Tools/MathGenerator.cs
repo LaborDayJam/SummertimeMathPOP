@@ -11,7 +11,6 @@ public class MathGenerator : MonoBehaviour
 	private int []	 	x,y,answer;
 	private int 		level = 0;
 	private int 		questionCount = 0;
-	private int 		questionValue = 0;
 	private int 		maxNum = 0;
 	private int 		minNum = 0;
 
@@ -31,14 +30,9 @@ public class MathGenerator : MonoBehaviour
 		x 				= new int[questionCount];
 		y 				= new int[questionCount];
 		answer 			= new int[questionCount];
-		questionValue 	= 5;
-		maxNum 			= (level * 5)+1;
+		maxNum 			= (level)+1;
 		minNum 			= level;
 
-		if(questionValue < 5)
-			questionValue = 5;
-		else if(questionValue > 20)
-			questionValue = 20;
 		 
 		SetQuestions(); 
 	}
