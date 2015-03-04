@@ -27,6 +27,7 @@ public class BubbleFactory : MonoBehaviour
 	void Awake()
 	{
 		RisingFactsManager.OnUpdate += new RisingFactsManager.GameUpdate(FactoryUpdate);
+		RisingFactsUIManager.OnPuased += new RisingFactsUIManager.PuaseEvent(OnPaused);
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(GetInfo);
 	}
 
@@ -53,6 +54,10 @@ public class BubbleFactory : MonoBehaviour
 		SwitchState();
 	}
 
+	private void OnPaused(bool playing)
+	{
+		canSpawn = playing;
+	}
 	private void SwitchState()
 	{
 		switch(lastState)

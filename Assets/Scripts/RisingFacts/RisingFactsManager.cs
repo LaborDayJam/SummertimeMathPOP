@@ -9,7 +9,7 @@ public class RisingFactsManager : MonoBehaviour
 	public static event GameUpdate OnUpdate;
 	public static event GameUpdate OnReset;
 
-	public delegate void RoundUpdate(int round, int score, float time, bool boy);
+	public delegate void RoundUpdate(float time);
 	public static event RoundUpdate OnPlaying;
 
 
@@ -44,9 +44,6 @@ public class RisingFactsManager : MonoBehaviour
 
 		Bubble.OnPop += new Bubble.BubbleEvent(AnsweredStatus);
 		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
-		
-	
-
 	}
 	
 	void OnDestroy()
@@ -57,7 +54,7 @@ public class RisingFactsManager : MonoBehaviour
 	void Start()
 	{
 		playerLevel = gameSettings.PlayerLevel;
-		bubbleFactory = GameObject.FindGameObjectWithTag("Factory").GetComponent<BubbleFactory>();	
+		bubbleFactory = GameObject.FindGameObjectWithTag("RisingFactory").GetComponent<BubbleFactory>();	
 	}
 
 	void RisingUpdate()
@@ -106,7 +103,7 @@ public class RisingFactsManager : MonoBehaviour
 			currTimer += Time.deltaTime;
 			
 			if(OnPlaying != null)
-				OnPlaying(playerLevel, score, maxRoundTime-currTimer,isBoy);
+				OnPlaying( maxRoundTime-currTimer);
 		}
 		else if(answered)
 		{
@@ -186,8 +183,6 @@ public class RisingFactsManager : MonoBehaviour
 				Destroy(bubble);
 		}
 	}
-
-	
 
 	IEnumerator WaitToPop(GameObject bubble)
 	{

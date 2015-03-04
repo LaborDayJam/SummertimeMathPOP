@@ -13,9 +13,10 @@ public class RisingFactsUIManager : MonoBehaviour
 	public Text equationText;
 	public Text nameText;
 	public Text timeText;
-	public Text roundText;
+	public Text levelText;
 	public Text scoreText;
-	
+
+	private GameSettings gameSettings;	
 	private int score;
 
 	// Use this for initialization
@@ -26,7 +27,10 @@ public class RisingFactsUIManager : MonoBehaviour
 		Bubble.OnPop += new Bubble.BubbleEvent(UpdateScore);
 		
 	}
-
+	void Start()
+	{
+		gameSettings = GameSettings.instance;
+	}
 	void OnDestroy()
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
@@ -35,18 +39,18 @@ public class RisingFactsUIManager : MonoBehaviour
 	}
 
 	// Update is called once per frame
-	void UIUpdate (int round, int score, float time, bool boy) 
+	void UIUpdate (float time) 
 	{
 		int timer = (int)time;
 		timeText.text = timer.ToString();
-		roundText.text = round.ToString();
+		levelText.text = gameSettings.PlayerLevel.ToString();
 			
 	}
 	
 	void UpdateScore(bool theOne)
 	{
 		if(theOne)
-		score += 5*GameSettings.instance.PlayerLevel;
+		score += 5 * gameSettings.PlayerLevel;
 		
 		scoreText.text = score.ToString();
 	}
