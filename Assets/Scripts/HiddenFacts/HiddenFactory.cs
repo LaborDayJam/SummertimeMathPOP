@@ -5,6 +5,7 @@ using System.Collections;
 public class HiddenFactory : MonoBehaviour 
 {
 	public GameObject[] hiddenSpots;
+	public GameObject	bubbleContainer;
 	public Button		hiddenBubble;
 	public bool 		canSpawn = true;
 
@@ -62,8 +63,8 @@ public class HiddenFactory : MonoBehaviour
 		{
 			if(bubbleCount < maxBubbleCount && theAnswer != 0 )
 			{
-				GameObject clone = Instantiate(hiddenBubble, hiddenSpots[bubbleCount].transform.position, Quaternion.identity) as GameObject;
-				clone.transform.SetParent(transform);
+				Button clone = Instantiate(hiddenBubble, hiddenSpots[bubbleCount].transform.position, Quaternion.identity) as Button;
+				clone.transform.SetParent(bubbleContainer.transform);
 
 				if(bubbleCount == answerBubble)
 				{

@@ -168,7 +168,7 @@ public class RisingFactsManager : MonoBehaviour
 
 	private void ResetGame()
 	{
-		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("bubbles");
+		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
 		hasReset = true;
 		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)

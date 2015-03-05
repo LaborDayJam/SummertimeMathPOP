@@ -24,6 +24,10 @@ public class HiddenBubble : MonoBehaviour
 	{
 		isPlaying = playing;
 	}
+	void Update()
+	{
+	
+	}
 
 	public void SetBubble(int bubbleID, int bubbleAnswer, bool correctChoice)
 	{

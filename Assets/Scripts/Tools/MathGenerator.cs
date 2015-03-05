@@ -59,7 +59,7 @@ public class MathGenerator : MonoBehaviour
 
 
 			answer[i] = x[i] * y[i];
-			//Debug.Log (x[i].ToString() + " x " + y[i].ToString() + " = " + answer[i].ToString());
+			Debug.Log (x[i].ToString() + " x " + y[i].ToString() + " = " + answer[i].ToString());
 		}
 
 	}

@@ -25,7 +25,7 @@ public class HiddenFactsManager : MonoBehaviour
 	private int 			playerLevel = 1;
 	private int				numOfRounds = 10;
 	private int				gameState = 0;
-	private int 			prevState = 0;
+	private int 			prevState = -1;
 	private int 			roundNum = 1;
 	private int 			lastRound = 0;
 	private int 			score = 0;
@@ -48,7 +48,7 @@ public class HiddenFactsManager : MonoBehaviour
 	void Start()
 	{
 		playerLevel = gameSettings.PlayerLevel;
-		hiddenFactory = GameObject.FindGameObjectWithTag("HiddenFactoy").GetComponent<HiddenFactory>();
+		hiddenFactory = GameObject.FindGameObjectWithTag("HiddenFactory").GetComponent<HiddenFactory>();
 	}
 	
 	void HiddenUpdate()
@@ -127,7 +127,7 @@ public class HiddenFactsManager : MonoBehaviour
 		answered = true;
 		
 		if(correct)
-			score+=5 * playerLevel;
+			score += 5 * playerLevel;
 	}
 	
 	private void EndGame()
@@ -157,14 +157,14 @@ public class HiddenFactsManager : MonoBehaviour
 	
 	private void ResetGame()
 	{
-		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("bubbles");
+		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
 		hasReset = true;
 		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)
 		{
-			if(bubble.GetComponent<Bubble>().theOne)
+			if(bubble.GetComponent<HiddenBubble>().theOne)
 			{
-				bubble.GetComponent<Bubble>().enabled = false;
+				bubble.GetComponent<HiddenBubble>().enabled = false;
 				bubble.transform.localPosition = Vector3.zero;
 				StartCoroutine(WaitToPop(bubble));
 			}
