@@ -135,7 +135,7 @@ public class HiddenFactsManager : MonoBehaviour
 		if(lastRound != roundNum)
 		{
 			roundNum++;
-			if(roundNum < numOfRounds)
+			if(roundNum <= numOfRounds)
 			{
 				Debug.Log("Waiting to start new round");
 				currTimer = 0;

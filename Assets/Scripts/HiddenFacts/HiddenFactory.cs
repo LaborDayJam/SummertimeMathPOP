@@ -61,7 +61,7 @@ public class HiddenFactory : MonoBehaviour
 	{
 		if(canSpawn)
 		{
-			if(bubbleCount < maxBubbleCount && theAnswer != 0 )
+			if(bubbleCount < maxBubbleCount)
 			{
 				Button clone = Instantiate(hiddenBubble, hiddenSpots[bubbleCount].transform.position, Quaternion.identity) as Button;
 				clone.transform.SetParent(bubbleContainer.transform);

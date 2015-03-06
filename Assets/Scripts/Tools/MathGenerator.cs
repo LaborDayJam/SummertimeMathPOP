@@ -30,9 +30,20 @@ public class MathGenerator : MonoBehaviour
 		x 				= new int[questionCount];
 		y 				= new int[questionCount];
 		answer 			= new int[questionCount];
-		maxNum 			= (level)+1;
-		minNum 			= level;
+		minNum 			= 0;
 
+		if(level <= 3)
+			maxNum = 3;
+		else if (level > 3 && level <= 6)
+			maxNum = 5;
+		else if (level > 6 && level <= 10)
+			maxNum = 7;
+		else if(level > 10 && level <= 15)
+			maxNum = 8;
+		else if( level > 15 && level <= 18)
+			maxNum = 10;
+		else 		
+			maxNum = 12;
 		 
 		SetQuestions(); 
 	}
