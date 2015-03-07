@@ -11,10 +11,9 @@ public class RisingFactsUIManager : MonoBehaviour
 	public static event PuaseEvent OnPuased;
 
 	public Text equationText;
-	public Text nameText;
 	public Text timeText;
 	public Text levelText;
-	public Text scoreText;
+	public Text correctText;
 
 	private GameSettings gameSettings;	
 	private int score;
@@ -52,7 +51,7 @@ public class RisingFactsUIManager : MonoBehaviour
 		if(theOne)
 		score += 5 * gameSettings.PlayerLevel;
 		
-		scoreText.text = score.ToString();
+		correctText.text = score.ToString();
 	}
 
 	void QuestionIn(int x, int y, int answers)

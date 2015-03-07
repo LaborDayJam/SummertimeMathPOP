@@ -66,9 +66,6 @@ public class MathGenerator : MonoBehaviour
 		{
 			x[i] = Random.Range(minNum,maxNum);
 			y[i] = Random.Range(minNum,maxNum);
-
-
-
 			answer[i] = x[i] * y[i];
 			Debug.Log (x[i].ToString() + " x " + y[i].ToString() + " = " + answer[i].ToString());
 		}
