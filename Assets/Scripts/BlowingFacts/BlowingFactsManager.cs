@@ -2,23 +2,23 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class RisingFactsManager : MonoBehaviour 
+public class BlowingFactsManager : MonoBehaviour 
 {
 	#region RisisngFactManager Variables
 	public delegate void GameUpdate(int state);
 	public static event GameUpdate OnUpdate;
 	public static event GameUpdate OnReset;
-
+	
 	public delegate void RoundUpdate(float time);
 	public static event RoundUpdate OnPlaying;
-
-
-
+	
+	
+	
 	public GameObject       roundObject;
 	public Text				roundText;
-	private BubbleFactory   bubbleFactory;
+	private BlowingFactory  bubbleFactory;
 	private GameSettings 	gameSettings;
-
+	
 	private float 			currTimer = 0f;
 	private float 			timer = 0;
 	private float			maxRoundTime = 10.5f;
@@ -33,30 +33,27 @@ public class RisingFactsManager : MonoBehaviour
 	public int 				roundNum = 1;
 	public int 				lastRound = 0;
 	public int 				score = 0;
-
-
+	
+	
 	#endregion
-
+	
 	#region Unity Functions
 	void Awake()
 	{
 		gameSettings = GameSettings.instance;
-
-		Bubble.OnPop += new Bubble.BubbleEvent(AnsweredStatus);
 		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
 	}
 	
 	void OnDestroy()
 	{
-		Bubble.OnPop -= new Bubble.BubbleEvent(AnsweredStatus);	
 		GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
 	}
 	void Start()
 	{
 		playerLevel = gameSettings.PlayerLevel;
-		bubbleFactory = GameObject.FindGameObjectWithTag("RisingFactory").GetComponent<BubbleFactory>();	
+		bubbleFactory = GameObject.FindGameObjectWithTag("BlowingFactory").GetComponent<BlowingFactory>();	
 	}
-
+	
 	void RisingUpdate()
 	{
 		if(prevState != gameState)
@@ -64,24 +61,24 @@ public class RisingFactsManager : MonoBehaviour
 			prevState = gameState;
 			StateSwitch();
 		}
-
+		
 		if(gameState == 1)
 			StateSwitch();
-	
+		
 		if(OnUpdate != null)
 			OnUpdate(gameState);
 	}
 	#endregion
-
+	
 	#region Class Functions
 	private void StateSwitch()
 	{
 		switch(gameState)
 		{
-			case 0 :{PreGame();}break;
-			case 1 :{RunningGame();}break;
-			case 2 :{EndGame();}break;
-			case 3 :{PausedGame();}break;
+		case 0 :{PreGame();}break;
+		case 1 :{RunningGame();}break;
+		case 2 :{EndGame();}break;
+		case 3 :{PausedGame();}break;
 		}
 	}
 	
@@ -102,27 +99,27 @@ public class RisingFactsManager : MonoBehaviour
 		{
 			currTimer += Time.deltaTime;
 			bubbleFactory.canSpawn = true;
-
+			
 			if(OnPlaying != null)
 				OnPlaying( maxRoundTime-currTimer);
 		}
-		else if(answered)
+		else if(answered)// change this to if done and bubbleCount is < theAnswer
 		{
 			if(currTimer > 0 && !hasReset)
 			{
 				bubbleFactory.canSpawn = false;
-				//play annimation
+				//play annimations
 				//play Sound;
 				ResetGame();
-			
+				
 				
 			}
 			else
 			{
 				if(!hasReset)
 					ResetGame();
-
-
+				
+				
 				Debug.Log("Outta time");
 			}
 		}
@@ -133,7 +130,7 @@ public class RisingFactsManager : MonoBehaviour
 				ResetGame();
 		}
 	}
-
+	
 	
 	private void AnsweredStatus(bool correct)
 	{
@@ -145,7 +142,7 @@ public class RisingFactsManager : MonoBehaviour
 			
 		}
 	}
-
+	
 	private void EndGame()
 	{
 		if(lastRound != roundNum)
@@ -169,8 +166,8 @@ public class RisingFactsManager : MonoBehaviour
 	
 	private void PausedGame(){}
 	
-
-
+	
+	
 	private void ResetGame()
 	{
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
@@ -189,21 +186,21 @@ public class RisingFactsManager : MonoBehaviour
 		}
 		Debug.Log("Destroyed the bubbles");
 	}
-
+	
 	IEnumerator WaitToPop(GameObject bubble)
 	{
 		yield return new WaitForSeconds(2);
 		Destroy(bubble);
 		gameState = 2;
 	}
-
+	
 	IEnumerator WaitForRound(float time)
 	{
 		yield return new WaitForSeconds(time);
 		roundObject.SetActive(false);
 		gameState = 1;
 	}
-
-
+	
+	
 	#endregion
 }

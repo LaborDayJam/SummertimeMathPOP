@@ -20,8 +20,8 @@ public class BubbleFactory : MonoBehaviour
 	private int 		minYScale = 0;
 	private int 		lastState = 0;
 	private int 		theAnswer = 0;
-	private int 		answerBubble = 0;
-	private int 		bubbleCount = 0;
+	private int 		answerBubble = -1;
+	public int 			bubbleCount = 0;
 
 
 	void Awake()
@@ -46,12 +46,11 @@ public class BubbleFactory : MonoBehaviour
 	}
 	private void FactoryUpdate(int state)
 	{
-		if(lastState != state)
+		if(lastState != state || state == 1)
 		{
-
+			SwitchState();
 			lastState = state;
 		}
-		SwitchState();
 	}
 
 	private void OnPaused(bool playing)
@@ -81,7 +80,7 @@ public class BubbleFactory : MonoBehaviour
 		{
 			if(timer < spawnTime)
 				timer += Time.deltaTime;
-			else if(bubbleCount < maxBubbleCount && theAnswer != 0 )
+			else if(bubbleCount < maxBubbleCount && theAnswer != -1 )
 			{
 				Button clone = Instantiate(bubbleButtons[0], spawnPosition.transform.position, Quaternion.identity)as Button;
 				clone.transform.SetParent(bubbleContainer.transform);
@@ -104,7 +103,7 @@ public class BubbleFactory : MonoBehaviour
 			else
 			{
 				answerBubble = Random.Range(0,6);
-				theAnswer = 0;
+				theAnswer = -1;
 			}
 		}
 	}
