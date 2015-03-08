@@ -15,6 +15,8 @@ public class BlowingFactsManager : MonoBehaviour
 	
 	
 	public GameObject       roundObject;
+	public GameObject		youWin;
+	public GameObject       youLose;
 	public Text				roundText;
 	private BlowingFactory  bubbleFactory;
 	private GameSettings 	gameSettings;
@@ -25,7 +27,7 @@ public class BlowingFactsManager : MonoBehaviour
 	private float			maxWaitTime = 3f;
 	private int 			numofrounds = 11;
 	private bool 			answered = false;
-	private bool 			isBoy = false;
+	private bool 			isRight = false;
 	private bool 			hasReset = false;
 	public int 				gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
 	public int 				prevState = -1;
@@ -42,11 +44,13 @@ public class BlowingFactsManager : MonoBehaviour
 	{
 		gameSettings = GameSettings.instance;
 		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
+		BlowingFactory.OnFinised += new BlowingFactory.PlayesrFinished(AnsweredStatus);
 	}
 	
 	void OnDestroy()
 	{
 		GameManager.OnUpdate -= new GameManager.GlobalUpdate(RisingUpdate);
+		BlowingFactory.OnFinised -= new BlowingFactory.PlayesrFinished(AnsweredStatus);
 	}
 	void Start()
 	{
@@ -107,8 +111,10 @@ public class BlowingFactsManager : MonoBehaviour
 		}
 		else if(answered)// change this to if done and bubbleCount is < theAnswer
 		{
-			if(currTimer > 0 && !hasReset)
+			if(currTimer <= 10 && isRight && !hasReset)
 			{
+				score++;
+				youWin.SetActive(true);
 				bubbleFactory.canSpawn = false;
 				ResetGame();
 				
@@ -116,31 +122,32 @@ public class BlowingFactsManager : MonoBehaviour
 			}
 			else
 			{
+				bubbleFactory.canSpawn = false;
+				youLose.SetActive(true);
 				if(!hasReset)
 					ResetGame();
-				
-				
-				Debug.Log("Outta time");
 			}
 		}
 		else 
 		{
-			Debug.Log("Resetting Game");
+			bubbleFactory.canSpawn = false;
+			if(bubbleFactory.bubbleCount > bubbleFactory.theAnswer)
+				youLose.SetActive(true);
+			else if(bubbleFactory.bubbleCount == bubbleFactory.theAnswer)
+				youWin.SetActive(true);
+			else 
+				youLose.SetActive(true);
+
 			if(!hasReset)
 				ResetGame();
 		}
 	}
 	
 	
-	private void AnsweredStatus(bool correct)
+	public void AnsweredStatus(bool correct)
 	{
 		answered = true;
-		
-		if(correct)
-		{
-			score+=5 * playerLevel;
-			
-		}
+		isRight = correct;
 	}
 	
 	private void EndGame()
@@ -170,6 +177,7 @@ public class BlowingFactsManager : MonoBehaviour
 	
 	private void ResetGame()
 	{
+		Debug.Log("Resetting Game");
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
 		hasReset = true;
 		// find bubbles here goin 
@@ -178,13 +186,14 @@ public class BlowingFactsManager : MonoBehaviour
 			Destroy(bubble);
 		}
 		Debug.Log("Destroyed the bubbles");
-		gameState = 2;
+		StartCoroutine(WaitToPop());
 	}
 	
-	IEnumerator WaitToPop(GameObject bubble)
+	IEnumerator WaitToPop()
 	{
 		yield return new WaitForSeconds(2);
-		Destroy(bubble);
+		youWin.SetActive(false);
+		youLose.SetActive(false);
 		gameState = 2;
 	}
 	

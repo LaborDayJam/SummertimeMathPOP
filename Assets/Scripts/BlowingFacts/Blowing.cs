@@ -17,7 +17,7 @@ public class Blowing : MonoBehaviour
 	public Text resultDisplay;   // GUIText for displaying results
 	public Text blowDisplay;     // GUIText for displaying blow or not blow.
 	public int recordedLength = 50;    // How many previous frames of sound are analyzed.
-	public int requiedBlowTime = 1;    // How long a blow must last to be classified as a blow (and not a sigh for instance).
+	public int requiedBlowTime = 2;    // How long a blow must last to be classified as a blow (and not a sigh for instance).
 	public int clamp = 160;            // Used to clamp dB (I don't really understand this either).
 
 	private AudioSource audio;
@@ -34,7 +34,8 @@ public class Blowing : MonoBehaviour
 	private List<float> dbValues;      // Used to average recent volume.
 	private List<float> pitchValues;   // Used to average recent pitch.
 	
-	public void Start () {
+	public void Start () 
+	{
 		samples = new float[SAMPLECOUNT];
 		spectrum = new float[SAMPLECOUNT];
 		dbValues = new List<float>();
@@ -46,7 +47,8 @@ public class Blowing : MonoBehaviour
 	public void Update () 
 	{
 		// If the audio has stopped playing, this will restart the mic play the clip.
-		if (!audio.isPlaying) {
+		if (!audio.isPlaying) 
+		{
 			StartMicListener();
 		}
 		
@@ -57,29 +59,34 @@ public class Blowing : MonoBehaviour
 		DeriveBlow();
 		
 		// Update the meter display.
-		if (resultDisplay){
+		if (resultDisplay)
+		{
 			resultDisplay.text = "RMS: " + rmsValue.ToString("F2") + " (" + dbValue.ToString("F1") + " dB)\n" + "Pitch: " + pitchValue.ToString("F0") + " Hz";
 		}
 	}
 	
 	/// Starts the Mic, and plays the audio back in (near) real-time.
-	private void StartMicListener() {
+	private void StartMicListener() 
+	{
 		audio.clip = Microphone.Start("Built-in Microphone", true, 999, FREQUENCY);
 		// HACK - Forces the function to wait until the microphone has started, before moving onto the play function.
-		while (!(Microphone.GetPosition("Built-in Microphone") > 0)) {
+		while (!(Microphone.GetPosition("Built-in Microphone") > 0)) 
+		{
 		} audio.Play();
 	}
 	
 
 	/// Analyzes the sound, to get volume and pitch values.
-	private void AnalyzeSound() {
+	private void AnalyzeSound() 
+	{
 		
 		// Get all of our samples from the mic.
 		audio.GetOutputData(samples, 0);
 		
 		// Sums squared samples
 		float sum = 0;
-		for (int i = 0; i < SAMPLECOUNT; i++){
+		for (int i = 0; i < SAMPLECOUNT; i++)
+		{
 			sum += Mathf.Pow(samples[i], 2);
 		}
 		
@@ -88,7 +95,8 @@ public class Blowing : MonoBehaviour
 		dbValue = 20 * Mathf.Log10(rmsValue / REFVALUE);
 		
 		// Clamp it to {clamp} min
-		if (dbValue < -clamp) {
+		if (dbValue < -clamp) 
+		{
 			dbValue = -clamp;
 		}
 		
@@ -98,8 +106,10 @@ public class Blowing : MonoBehaviour
 		int maxN = 0;
 		
 		// Find the highest sample.
-		for (int i = 0; i < SAMPLECOUNT; i++){
-			if (spectrum[i] > maxV && spectrum[i] > THRESHOLD){
+		for (int i = 0; i < SAMPLECOUNT; i++)
+		{
+			if (spectrum[i] > maxV && spectrum[i] > THRESHOLD)
+			{
 				maxV = spectrum[i];
 				maxN = i; // maxN is the index of max
 			}
@@ -109,7 +119,8 @@ public class Blowing : MonoBehaviour
 		float freqN = maxN;
 		
 		// Interpolate index using neighbours
-		if (maxN > 0 && maxN < SAMPLECOUNT - 1) {
+		if (maxN > 0 && maxN < SAMPLECOUNT - 1) 
+		{
 			float dL = spectrum[maxN-1] / spectrum[maxN];
 			float dR = spectrum[maxN+1] / spectrum[maxN];
 			freqN += 0.5f * (dR * dR - dL * dL);
@@ -119,14 +130,16 @@ public class Blowing : MonoBehaviour
 		pitchValue = freqN * 24000 / SAMPLECOUNT;
 	}
 	
-	private void DeriveBlow() {
+	private void DeriveBlow() 
+	{
 		
 		UpdateRecords(dbValue, dbValues);
 		UpdateRecords(pitchValue, pitchValues);
 		
 		// Find the average pitch in our records (used to decipher against whistles, clicks, etc).
 		float sumPitch = 0;
-		foreach (float num in pitchValues) {
+		foreach (float num in pitchValues) 
+		{
 			sumPitch += num;
 		}
 		sumPitch /= pitchValues.Count;
@@ -135,9 +148,12 @@ public class Blowing : MonoBehaviour
 		lowPassResults = LowPassFilter(dbValue);
 		
 		// Decides whether this instance of the result could be a blow or not.
-		if (lowPassResults > -42 && sumPitch == 0) {
+		if (lowPassResults > -30 && sumPitch == 0) 
+		{
 			blowingTime += 1;
-		} else {
+		}
+		else 
+		{
 			blowingTime = 0;
 		}
 		
@@ -160,8 +176,10 @@ public class Blowing : MonoBehaviour
 	}
 	
 	// Updates a record, by removing the oldest entry and adding the newest value (val).
-	private void UpdateRecords(float val, List<float> record) {
-		if (record.Count > recordedLength) {
+	private void UpdateRecords(float val, List<float> record) 
+	{
+		if (record.Count > recordedLength) 
+		{
 			record.RemoveAt(0);
 		}
 		record.Add(val);
@@ -169,7 +187,8 @@ public class Blowing : MonoBehaviour
 	
 	/// Gives a result (I don't really understand this yet) based on the peak volume of the record
 	/// and the previous low pass results.
-	private float LowPassFilter(float peakVolume) {
+	private float LowPassFilter(float peakVolume) 
+	{
 		return ALPHA * peakVolume + (1.0f - ALPHA) * lowPassResults;
 	}
 }
