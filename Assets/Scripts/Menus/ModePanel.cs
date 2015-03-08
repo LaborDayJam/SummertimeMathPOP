@@ -12,6 +12,7 @@ public class ModePanel : MonoBehaviour
 	private MenuManager  	menuManager;
 	private string 			risingFacts = "Rising Facts";
 	private string 			hiddenFacts = "Hidden Facts";
+	private string 			blowingFacts = "Blowing Facts";
 
 	private int 			modeNum = 0; // 0 = rising facts; 1 = hidden facts;
 	private int 			diffNum  = 1; // this num can never be higher than playerLevel;
@@ -30,10 +31,10 @@ public class ModePanel : MonoBehaviour
 	private void SetModeName()
 	{
 	
-		if(modeNum > 1)
+		if(modeNum > 2)
 			modeNum = 0;
 		else if(modeNum < 0)
-			modeNum = 1;
+			modeNum = 2;
 		
 		
 		switch(modeNum)
@@ -44,6 +45,9 @@ public class ModePanel : MonoBehaviour
 			case 1:
 				gameModeText.text = hiddenFacts;
 				break;
+			case 2:
+				gameModeText.text = blowingFacts;
+			break;
 		}
 	}
 	

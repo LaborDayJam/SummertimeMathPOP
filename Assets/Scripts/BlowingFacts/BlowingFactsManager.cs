@@ -4,7 +4,7 @@ using System.Collections;
 
 public class BlowingFactsManager : MonoBehaviour 
 {
-	#region RisisngFactManager Variables
+	#region BlowingFactsManager Variables
 	public delegate void GameUpdate(int state);
 	public static event GameUpdate OnUpdate;
 	public static event GameUpdate OnReset;
@@ -93,12 +93,14 @@ public class BlowingFactsManager : MonoBehaviour
 	private void RunningGame()
 	{
 		if(currTimer == 0)
+		{
 			MathGenerator.instance.GetQuestions();
-		
+			bubbleFactory.canSpawn = true;
+		}
 		if(currTimer < maxRoundTime && !answered)
 		{
 			currTimer += Time.deltaTime;
-			bubbleFactory.canSpawn = true;
+
 			
 			if(OnPlaying != null)
 				OnPlaying( maxRoundTime-currTimer);
@@ -108,8 +110,6 @@ public class BlowingFactsManager : MonoBehaviour
 			if(currTimer > 0 && !hasReset)
 			{
 				bubbleFactory.canSpawn = false;
-				//play annimations
-				//play Sound;
 				ResetGame();
 				
 				
@@ -175,16 +175,10 @@ public class BlowingFactsManager : MonoBehaviour
 		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)
 		{
-			if(bubble.GetComponent<Bubble>().theOne)
-			{
-				bubble.GetComponent<Bubble>().enabled = false;
-				bubble.transform.localPosition = Vector3.zero;
-				StartCoroutine(WaitToPop(bubble));
-			}
-			else 
-				Destroy(bubble);
+			Destroy(bubble);
 		}
 		Debug.Log("Destroyed the bubbles");
+		gameState = 2;
 	}
 	
 	IEnumerator WaitToPop(GameObject bubble)

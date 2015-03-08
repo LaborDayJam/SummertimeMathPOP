@@ -22,9 +22,7 @@ public class BlowingFactsUI : MonoBehaviour
 	void Awake () 
 	{
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(QuestionIn);
-		BlowingFactsManager.OnPlaying += new BlowingFactsManager.RoundUpdate(UIUpdate);
-		Bubble.OnPop += new Bubble.BubbleEvent(UpdateScore);
-		
+		BlowingFactsManager.OnPlaying += new BlowingFactsManager.RoundUpdate(UIUpdate);		
 	}
 	void Start()
 	{
@@ -34,7 +32,7 @@ public class BlowingFactsUI : MonoBehaviour
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
 		BlowingFactsManager.OnPlaying -= new BlowingFactsManager.RoundUpdate(UIUpdate);
-		Bubble.OnPop -= new Bubble.BubbleEvent(UpdateScore);
+	
 	}
 	
 	// Update is called once per frame
@@ -46,12 +44,11 @@ public class BlowingFactsUI : MonoBehaviour
 		
 	}
 	
-	void UpdateScore(bool theOne)
+	void UpdateScore(bool right)
 	{
-		if(theOne)
-			score += 5 * gameSettings.PlayerLevel;
-		
+		score += 1;
 		correctText.text = score.ToString();
+
 	}
 	
 	void QuestionIn(int x, int y, int answers)

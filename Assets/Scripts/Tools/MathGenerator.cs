@@ -25,26 +25,42 @@ public class MathGenerator : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		level 			= GameSettings.instance.PlayerLevel;
+		level 			= 10;//GameSettings.instance.PlayerLevel;
 		questionCount 	= 10;
 		x 				= new int[questionCount];
 		y 				= new int[questionCount];
 		answer 			= new int[questionCount];
-		minNum 			= 0;
-
+	
 		if(level <= 3)
+		{
 			maxNum = 3;
+			minNum = 0;
+		}
 		else if (level > 3 && level <= 6)
+		{
 			maxNum = 5;
+			minNum = 2;
+		}
 		else if (level > 6 && level <= 10)
+		{
 			maxNum = 7;
+			minNum = 4;
+		}
 		else if(level > 10 && level <= 15)
+		{
 			maxNum = 8;
+			minNum = 6;
+		}
 		else if( level > 15 && level <= 18)
+		{
 			maxNum = 10;
+			minNum = 8;
+		}
 		else 		
+		{
 			maxNum = 12;
-		 
+			minNum = 8;
+		}
 		SetQuestions(); 
 	}
 

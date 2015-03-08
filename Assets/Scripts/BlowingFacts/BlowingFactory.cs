@@ -10,19 +10,20 @@ public class BlowingFactory : MonoBehaviour
 	
 	public bool 		canSpawn = true;
 	public bool 		onFinished = false;
+	public bool 		isBlowing = false;
 	private int 		maxXScale = 0;
 	private int 		minXScale = 0;
 	private int 		maxYScale = 0;
 	private int 		minYScale = 0;
 	private int 		lastState = 0;
-	private int 		theAnswer = 0;
+	public  int 		theAnswer = 0;
 	public int 			bubbleCount = 0;
 	
 	
 	void Awake()
 	{
 		BlowingFactsManager.OnUpdate += new BlowingFactsManager.GameUpdate(FactoryUpdate);
-		RisingFactsUIManager.OnPuased += new RisingFactsUIManager.PuaseEvent(OnPaused);
+		Blowing.OnBlowing += new Blowing.BlowingUpdate(IsBlowing);
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(GetInfo);
 	}
 	
@@ -30,10 +31,14 @@ public class BlowingFactory : MonoBehaviour
 	void OnDestroy()
 	{
 		BlowingFactsManager.OnUpdate -= new BlowingFactsManager.GameUpdate(FactoryUpdate);
+		Blowing.OnBlowing -= new Blowing.BlowingUpdate(IsBlowing);
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(GetInfo);
 	}
 	
-	
+	private void IsBlowing(bool blowing)
+	{
+			isBlowing = blowing;
+	}
 	private void GetInfo(int x, int y, int answer)
 	{
 		theAnswer = answer;
@@ -59,6 +64,7 @@ public class BlowingFactory : MonoBehaviour
 		{
 			bubbleCount = 0;
 			canSpawn = true;
+			onFinished = false;
 		}break;
 		case 1:
 		{
@@ -70,19 +76,42 @@ public class BlowingFactory : MonoBehaviour
 	
 	private void SpawnBubbles()
 	{
-		if(canSpawn || bubbleCount < theAnswer || !onFinished)
+		if(canSpawn)
 		{	
-			GameObject clone = Instantiate(bubble, spawnPosition.transform.position, Quaternion.identity)as GameObject;
-			clone.transform.SetParent(bubbleContainer.transform);
-			bubbleCount++;
+			if(isBlowing && !onFinished)
+			{
+				GameObject clone = Instantiate(bubble,new Vector3(Random.Range(0f,500.0f), 100,0), Quaternion.identity)as GameObject;
+				clone.transform.SetParent(bubbleContainer.transform);
+				clone.GetComponent<BlowingBubble>().SetBubble(bubbleCount,0,false);
+				bubbleCount++;
+				canSpawn = false;
+				StartCoroutine("WaitToBubble");
+			}
+			else if(onFinished)
+			{
+				if(bubbleCount < theAnswer)
+				{
+					// they didnt get it right
+				}
+			}
 		}
 		else if(bubbleCount > theAnswer && !onFinished)
 		{
 			// they made to many bubbles reset the game here.
 		}
-		else if(bubbleCount < theAnswer && onFinished)
+		else if(bubbleCount == theAnswer && onFinished)
 		{
 			// they got it right reset the game here.
 		}
+	}
+
+	public void OnFinished()
+	{
+		onFinished = true;
+	}
+	private IEnumerator WaitToBubble()
+	{
+		yield return new WaitForSeconds(.05f);
+		canSpawn = true;
 	}
 }

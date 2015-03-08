@@ -68,6 +68,12 @@ public class GameManager : MonoBehaviour
 			
 			stateObjects[2].SetActive(true);
 			break;
+		case 3:
+			for (int i = 0; i < stateObjects.Length; i++)
+				stateObjects[i].SetActive(false);
+			
+			stateObjects[3].SetActive(true);
+			break;
 		}
 	}
 	#endregion
