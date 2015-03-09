@@ -18,6 +18,8 @@ public class RisingFactsManager : MonoBehaviour
 	public Text				roundText;
 	private BubbleFactory   bubbleFactory;
 	private GameSettings 	gameSettings;
+	private EndMenuSaved    endMenu;
+	private MathGenerator	mathGen;
 
 	private float 			currTimer = 0f;
 	private float 			timer = 0;
@@ -32,7 +34,8 @@ public class RisingFactsManager : MonoBehaviour
 	public int 				playerLevel = 1;
 	public int 				roundNum = 1;
 	public int 				lastRound = 0;
-	public int 				score = 0;
+	public int 				timeSaved = 0;
+	public int 				numCorrecct = 0;
 
 
 	#endregion
@@ -54,7 +57,12 @@ public class RisingFactsManager : MonoBehaviour
 	void Start()
 	{
 		playerLevel = gameSettings.PlayerLevel;
-		bubbleFactory = GameObject.FindGameObjectWithTag("RisingFactory").GetComponent<BubbleFactory>();	
+		bubbleFactory = GameObject.FindGameObjectWithTag("RisingFactory").GetComponent<BubbleFactory>();
+		endMenu = GameObject.FindGameObjectWithTag("EndMenu").GetComponent<EndMenuSaved>();
+		mathGen  = GameObject.FindGameObjectWithTag("MathGen").GetComponent<MathGenerator>();
+		mathGen.SetQuestions();
+		endMenu.SaveTime = 0;
+		endMenu.NumOfCorrect = 0;
 	}
 
 	void RisingUpdate()
@@ -96,7 +104,7 @@ public class RisingFactsManager : MonoBehaviour
 	private void RunningGame()
 	{
 		if(currTimer == 0)
-			MathGenerator.instance.GetQuestions();
+			mathGen.GetQuestions();
 		
 		if(currTimer < maxRoundTime && !answered)
 		{
@@ -141,8 +149,8 @@ public class RisingFactsManager : MonoBehaviour
 		
 		if(correct)
 		{
-			score+=5 * playerLevel;
-			
+			timeSaved += (int)(maxRoundTime - currTimer);
+			numCorrecct += 1;			
 		}
 	}
 
@@ -153,7 +161,6 @@ public class RisingFactsManager : MonoBehaviour
 			roundNum++;
 			if(roundNum < numofrounds)
 			{
-				Debug.Log("Waiting to start new round");
 				currTimer = 0;
 				answered = false;
 				hasReset = false;
@@ -162,7 +169,9 @@ public class RisingFactsManager : MonoBehaviour
 			}
 			else
 			{
-				Debug.Log("end game here");
+				endMenu.NumOfCorrect = numCorrecct;
+				endMenu.SaveTime = timeSaved;
+				GameManager.instance.CurrentState = 4;
 			}
 		}
 	}

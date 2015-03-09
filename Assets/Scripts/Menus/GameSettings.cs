@@ -36,8 +36,6 @@ public class GameSettings : MonoBehaviour
 			instance = this;
 		else 
 			Destroy(gameObject);
-
-		DontDestroyOnLoad(this.gameObject);
 	
 		playerLevel 	= PlayerPrefs.GetInt("PlayerLevel");
 		playerPoints 	= PlayerPrefs.GetInt("PlayerPoints");

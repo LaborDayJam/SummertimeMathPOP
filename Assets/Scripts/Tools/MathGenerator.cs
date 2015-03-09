@@ -23,9 +23,9 @@ public class MathGenerator : MonoBehaviour
 	}
 
 	// Use this for initialization
-	void Start () 
+	void CheckLevel () 
 	{
-		level 			= 10;//GameSettings.instance.PlayerLevel;
+		level 			= GameSettings.instance.PlayerLevel;
 		questionCount 	= 10;
 		x 				= new int[questionCount];
 		y 				= new int[questionCount];
@@ -76,8 +76,9 @@ public class MathGenerator : MonoBehaviour
 			OnGetQuestion(x[questionCount],y[questionCount],answer[questionCount]);
 	}
 
-	private void SetQuestions()
+	public void SetQuestions()
 	{
+		CheckLevel();
 		for( int i = 0; i < answer.Length ; i++)
 		{
 			x[i] = Random.Range(minNum,maxNum);
