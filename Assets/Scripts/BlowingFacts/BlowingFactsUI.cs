@@ -14,41 +14,39 @@ public class BlowingFactsUI : MonoBehaviour
 	public Text timeText;
 	public Text levelText;
 	public Text correctText;
-	
-	private GameSettings gameSettings;	
-	private int score;
-	
+	public Text savedTimeText;
+
 	// Use this for initialization
 	void Awake () 
 	{
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(QuestionIn);
 		BlowingFactsManager.OnPlaying += new BlowingFactsManager.RoundUpdate(UIUpdate);		
+		BlowingFactsManager.OnCorrect += new BlowingFactsManager.ScoreUpdate(UpdateScore);
 	}
-	void Start()
-	{
-		gameSettings = GameSettings.instance;
-	}
+
 	void OnDestroy()
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
 		BlowingFactsManager.OnPlaying -= new BlowingFactsManager.RoundUpdate(UIUpdate);
-	
+		BlowingFactsManager.OnCorrect -= new BlowingFactsManager.ScoreUpdate(UpdateScore);
 	}
-	
+
+	void Start()
+	{
+		levelText.text = GameSettings.instance.PlayerLevel.ToString();
+	}
+
 	// Update is called once per frame
 	void UIUpdate (float time) 
 	{
 		int timer = (int)time;
-		timeText.text = timer.ToString();
-		levelText.text = gameSettings.PlayerLevel.ToString();
-		
+		timeText.text = timer.ToString();		
 	}
 	
-	void UpdateScore(bool right)
+	void UpdateScore(int savedTime, int numCorrect)
 	{
-		score += 1;
-		correctText.text = score.ToString();
-
+		savedTimeText.text = savedTime.ToString();
+		correctText.text = numCorrect.ToString();
 	}
 	
 	void QuestionIn(int x, int y, int answers)

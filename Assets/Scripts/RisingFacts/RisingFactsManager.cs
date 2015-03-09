@@ -12,12 +12,12 @@ public class RisingFactsManager : MonoBehaviour
 	public delegate void RoundUpdate(float time);
 	public static event RoundUpdate OnPlaying;
 
-
+	public delegate void ScoreUpdate(int savedTotalTime, int totalNumCorrect);
+	public static event ScoreUpdate OnCorrect;
 
 	public GameObject       roundObject;
 	public Text				roundText;
 	private BubbleFactory   bubbleFactory;
-	private GameSettings 	gameSettings;
 	private EndMenuSaved    endMenu;
 	private MathGenerator	mathGen;
 
@@ -29,13 +29,13 @@ public class RisingFactsManager : MonoBehaviour
 	private bool 			answered = false;
 	private bool 			isBoy = false;
 	private bool 			hasReset = false;
-	public int 				gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
-	public int 				prevState = -1;
-	public int 				playerLevel = 1;
-	public int 				roundNum = 1;
-	public int 				lastRound = 0;
-	public int 				timeSaved = 0;
-	public int 				numCorrecct = 0;
+	private int 			gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
+	private int 			prevState = -1;
+	private int 			playerLevel = 1;
+	private int 			roundNum = 1;
+	private int 			lastRound = 0;
+	private int 			timeSaved = 0;
+	private int 			numCorrect = 0;
 
 
 	#endregion
@@ -43,8 +43,6 @@ public class RisingFactsManager : MonoBehaviour
 	#region Unity Functions
 	void Awake()
 	{
-		gameSettings = GameSettings.instance;
-
 		Bubble.OnPop += new Bubble.BubbleEvent(AnsweredStatus);
 		GameManager.OnUpdate += new GameManager.GlobalUpdate(RisingUpdate);
 	}
@@ -56,7 +54,6 @@ public class RisingFactsManager : MonoBehaviour
 	}
 	void Start()
 	{
-		playerLevel = gameSettings.PlayerLevel;
 		bubbleFactory = GameObject.FindGameObjectWithTag("RisingFactory").GetComponent<BubbleFactory>();
 		endMenu = GameObject.FindGameObjectWithTag("EndMenu").GetComponent<EndMenuSaved>();
 		mathGen  = GameObject.FindGameObjectWithTag("MathGen").GetComponent<MathGenerator>();
@@ -104,8 +101,10 @@ public class RisingFactsManager : MonoBehaviour
 	private void RunningGame()
 	{
 		if(currTimer == 0)
+		{
+			bubbleFactory.canSpawn = true;
 			mathGen.GetQuestions();
-		
+		}
 		if(currTimer < maxRoundTime && !answered)
 		{
 			currTimer += Time.deltaTime;
@@ -119,38 +118,31 @@ public class RisingFactsManager : MonoBehaviour
 			if(currTimer > 0 && !hasReset)
 			{
 				bubbleFactory.canSpawn = false;
-				//play annimation
-				//play Sound;
 				ResetGame();
-			
-				
 			}
 			else
 			{
 				if(!hasReset)
 					ResetGame();
-
-
-				Debug.Log("Outta time");
 			}
 		}
 		else 
 		{
-			Debug.Log("Resetting Game");
 			if(!hasReset)
 				ResetGame();
 		}
 	}
 
-	
 	private void AnsweredStatus(bool correct)
 	{
 		answered = true;
-		
 		if(correct)
 		{
 			timeSaved += (int)(maxRoundTime - currTimer);
-			numCorrecct += 1;			
+			numCorrect += 1;
+
+			if(OnCorrect != null)
+				OnCorrect(timeSaved, numCorrect);
 		}
 	}
 
@@ -169,7 +161,7 @@ public class RisingFactsManager : MonoBehaviour
 			}
 			else
 			{
-				endMenu.NumOfCorrect = numCorrecct;
+				endMenu.NumOfCorrect = numCorrect;
 				endMenu.SaveTime = timeSaved;
 				GameManager.instance.CurrentState = 4;
 			}
@@ -177,14 +169,10 @@ public class RisingFactsManager : MonoBehaviour
 	}
 	
 	private void PausedGame(){}
-	
-
 
 	private void ResetGame()
 	{
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
-		hasReset = true;
-		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)
 		{
 			if(bubble.GetComponent<Bubble>().theOne)
@@ -196,7 +184,7 @@ public class RisingFactsManager : MonoBehaviour
 			else 
 				Destroy(bubble);
 		}
-		Debug.Log("Destroyed the bubbles");
+		hasReset = true;
 	}
 
 	IEnumerator WaitToPop(GameObject bubble)
@@ -212,7 +200,5 @@ public class RisingFactsManager : MonoBehaviour
 		roundObject.SetActive(false);
 		gameState = 1;
 	}
-
-
 	#endregion
 }

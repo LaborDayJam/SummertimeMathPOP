@@ -13,7 +13,10 @@ public class Blowing : MonoBehaviour
 	private const float REFVALUE = 0.1f;    // RMS value for 0 dB.
 	private const float THRESHOLD = 0.02f;  // Minimum amplitude to extract pitch (recieve anything)
 	private const float ALPHA = 0.05f;      // The alpha for the low pass filter (I don't really understand this).
-	
+
+
+	public Text resultDisplay;
+	public Text blowDisplay;
 	public int recordedLength = 50;    // How many previous frames of sound are analyzed.
 	public int requiedBlowTime = 2;    // How long a blow must last to be classified as a blow (and not a sigh for instance).
 	public int clamp = 160;            // Used to clamp dB (I don't really understand this either).

@@ -12,9 +12,12 @@ public class HiddenFactsManager : MonoBehaviour
 	public delegate void RoundUpdate(float time);
 	public static event RoundUpdate OnPlaying;
 
+	public delegate void ScoreUpdate(int totalSavedTime, int totalNumCorrect);
+	public static event ScoreUpdate OnCorrect;
+
 	public GameObject 		roundObject;
 	public Text 			roundText;
-	private GameSettings 	gameSettings;
+
 	private HiddenFactory	hiddenFactory;
 	private MathGenerator	mathGen;
 	private EndMenuSaved    endMenu;
@@ -36,8 +39,6 @@ public class HiddenFactsManager : MonoBehaviour
 	#region Unity Functions
 	void Awake()
 	{
-		gameSettings = GameSettings.instance;
-		
 		HiddenBubble.OnPop += new HiddenBubble.BubbleEvent(AnsweredStatus);
 		GameManager.OnUpdate += new GameManager.GlobalUpdate(HiddenUpdate);
 	}
@@ -47,10 +48,15 @@ public class HiddenFactsManager : MonoBehaviour
 		HiddenBubble.OnPop -= new HiddenBubble.BubbleEvent(AnsweredStatus);	
 		GameManager.OnUpdate -= new GameManager.GlobalUpdate(HiddenUpdate);
 	}
+
 	void Start()
 	{
-		playerLevel = gameSettings.PlayerLevel;
 		hiddenFactory = GameObject.FindGameObjectWithTag("HiddenFactory").GetComponent<HiddenFactory>();
+		mathGen = GameObject.FindGameObjectWithTag("MathGen").GetComponent<MathGenerator>();
+		endMenu = GameObject.FindGameObjectWithTag("EndMenu").GetComponent<EndMenuSaved>();
+		endMenu.NumOfCorrect = 0;
+		endMenu.SaveTime = 0;
+		mathGen.SetQuestions();
 	}
 	
 	void HiddenUpdate()
@@ -74,10 +80,10 @@ public class HiddenFactsManager : MonoBehaviour
 	{
 		switch(gameState)
 		{
-		case 0 :{PreGame();}break;
-		case 1 :{RunningGame();}break;
-		case 2 :{EndGame();}break;
-		case 3 :{PausedGame();}break;
+			case 0 :{PreGame();}break;
+			case 1 :{RunningGame();}break;
+			case 2 :{EndGame();}break;
+			case 3 :{PausedGame();}break;
 		}
 	}
 	
@@ -92,8 +98,10 @@ public class HiddenFactsManager : MonoBehaviour
 	private void RunningGame()
 	{
 		if(currTimer == 0)
-			MathGenerator.instance.GetQuestions();
-		
+		{
+			mathGen.GetQuestions();
+			hiddenFactory.canSpawn = true;
+		}
 		if(currTimer < maxRoundTime && !answered)
 		{
 			currTimer += Time.deltaTime;
@@ -103,11 +111,10 @@ public class HiddenFactsManager : MonoBehaviour
 		}
 		else if(answered)
 		{
+			hiddenFactory.canSpawn = false;
+
 			if(currTimer > 0 && !hasReset)
 			{
-				hiddenFactory.canSpawn = false;
-				//play annimation
-				//play Sound;
 				ResetGame();
 			}
 			else
@@ -122,14 +129,18 @@ public class HiddenFactsManager : MonoBehaviour
 				ResetGame();
 		}
 	}
-	
-	
+
 	private void AnsweredStatus(bool correct)
 	{
 		answered = true;
-		
 		if(correct)
-			savedTime += 5 * playerLevel;
+		{
+			savedTime += (int)(maxRoundTime - currTimer);
+			numCorrect += 1;
+
+			if(OnCorrect != null)
+				OnCorrect(savedTime,numCorrect);
+		}
 	}
 	
 	private void EndGame()
@@ -139,7 +150,6 @@ public class HiddenFactsManager : MonoBehaviour
 			roundNum++;
 			if(roundNum <= numOfRounds)
 			{
-				Debug.Log("Waiting to start new round");
 				currTimer = 0;
 				answered = false;
 				hasReset = false;
@@ -148,20 +158,18 @@ public class HiddenFactsManager : MonoBehaviour
 			}
 			else
 			{
-				Debug.Log("end game here");
+				endMenu.SaveTime = savedTime;
+				endMenu.NumOfCorrect = numCorrect;
+				GameManager.instance.CurrentState = 4;
 			}
 		}
 	}
 	
 	private void PausedGame(){}
-	
-	
-	
+
 	private void ResetGame()
 	{
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
-		hasReset = true;
-		// find bubbles here goin 
 		foreach(GameObject bubble in bubbles)
 		{
 			if(bubble.GetComponent<HiddenBubble>().theOne)
@@ -173,10 +181,9 @@ public class HiddenFactsManager : MonoBehaviour
 			else 
 				Destroy(bubble);
 		}
+		hasReset = true;
 	}
-	
-	
-	
+
 	IEnumerator WaitToPop(GameObject bubble)
 	{
 		yield return new WaitForSeconds(2);

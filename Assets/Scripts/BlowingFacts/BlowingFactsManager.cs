@@ -11,7 +11,9 @@ public class BlowingFactsManager : MonoBehaviour
 	
 	public delegate void RoundUpdate(float time);
 	public static event RoundUpdate OnPlaying;
-	
+
+	public delegate void ScoreUpdate(int totalTimeSaved, int totalNumCorrect);
+	public static event ScoreUpdate OnCorrect;
 	
 	
 	public GameObject       roundObject;
@@ -31,13 +33,13 @@ public class BlowingFactsManager : MonoBehaviour
 	private bool 			answered = false;
 	private bool 			isRight = false;
 	private bool 			hasReset = false;
-	public int 				gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
-	public int 				prevState = -1;
-	public int 				playerLevel = 1;
-	public int 				roundNum = 1;
-	public int 				lastRound = 0;
-	public int 				savedTime = 0;
-	public int 				numCorrect = 0;
+	private int 			gameState = 0; // 0 = pre game, 1 = in game, 2 = post game, 3 = game paused;
+	private int 			prevState = -1;
+	private int 			playerLevel = 1;
+	private int 			roundNum = 1;
+	private int 			lastRound = 0;
+	private int 			savedTime = 0;
+	private int 			numCorrect = 0;
 	
 	#endregion
 	
@@ -118,15 +120,11 @@ public class BlowingFactsManager : MonoBehaviour
 		}
 		else if(answered)// change this to if done and bubbleCount is < theAnswer
 		{
-			if(currTimer <= 10 && isRight && !hasReset)
+			if(currTimer <= 10 && !hasReset && isRight)
 			{
-				savedTime += (int)(maxRoundTime - currTimer);
-				numCorrect += 1;
 				youWin.SetActive(true);
 				bubbleFactory.canSpawn = false;
 				ResetGame();
-				
-				
 			}
 			else
 			{
@@ -156,6 +154,14 @@ public class BlowingFactsManager : MonoBehaviour
 	{
 		answered = true;
 		isRight = correct;
+		if(correct)
+		{
+			savedTime += (int)(maxRoundTime - currTimer);
+			numCorrect += 1;
+
+			if(OnCorrect != null)
+				OnCorrect(savedTime,numCorrect);
+		}
 	}
 	
 	private void EndGame()
@@ -168,6 +174,7 @@ public class BlowingFactsManager : MonoBehaviour
 				currTimer = 0;
 				answered = false;
 				hasReset = false;
+				isRight  = false;
 				gameState = 0;
 				lastRound = roundNum;
 			}

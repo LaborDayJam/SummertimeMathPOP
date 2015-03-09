@@ -13,29 +13,29 @@ public class HiddenFactsUI : MonoBehaviour {
 	public Text equationText;
 	public Text timeText;
 	public Text levelText;
-	public Text scoreText;
+	public Text correctText;
+	public Text totalSavedTimeText;
 
-	private GameSettings gameSettings;
-	private int score;
+
 	
 	// Use this for initialization
 	void Awake () 
 	{
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(QuestionIn);
 		HiddenFactsManager.OnPlaying += new HiddenFactsManager.RoundUpdate(UIUpdate);
-		HiddenBubble.OnPop += new HiddenBubble.BubbleEvent(UpdateScore);
-		
+		HiddenFactsManager.OnCorrect += new HiddenFactsManager.ScoreUpdate(UpdateScore);
 	}
 
-	void Start()
-	{
-		gameSettings = GameSettings.instance;
-	}
 	void OnDestroy()
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
 		HiddenFactsManager.OnPlaying -= new HiddenFactsManager.RoundUpdate(UIUpdate);
-		HiddenBubble.OnPop -= new HiddenBubble.BubbleEvent(UpdateScore);
+		HiddenFactsManager.OnCorrect -= new HiddenFactsManager.ScoreUpdate(UpdateScore);
+	}
+
+	void Start()
+	{
+		levelText.text = GameSettings.instance.PlayerLevel.ToString();
 	}
 	
 	// Update is called once per frame
@@ -43,16 +43,12 @@ public class HiddenFactsUI : MonoBehaviour {
 	{
 		int timer = (int)time;
 		timeText.text = timer.ToString();
-		levelText.text = gameSettings.PlayerLevel.ToString();
-		
 	}
 	
-	void UpdateScore(bool theOne)
+	void UpdateScore(int timeSaved, int numCorrect)
 	{
-		if(theOne)
-			score += 5 * gameSettings.PlayerLevel;
-		
-		scoreText.text = score.ToString();
+		totalSavedTimeText.text = timeSaved.ToString();
+		correctText.text = numCorrect.ToString();
 	}
 	
 	void QuestionIn(int x, int y, int answers)

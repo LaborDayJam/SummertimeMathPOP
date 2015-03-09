@@ -14,27 +14,26 @@ public class RisingFactsUIManager : MonoBehaviour
 	public Text timeText;
 	public Text levelText;
 	public Text correctText;
+	public Text timeSavedText;
+	
 
-	private GameSettings gameSettings;	
-	private int score;
 
 	// Use this for initialization
 	void Awake () 
 	{
 		MathGenerator.OnGetQuestion += new MathGenerator.QuestionOut(QuestionIn);
 		RisingFactsManager.OnPlaying += new RisingFactsManager.RoundUpdate(UIUpdate);
-		Bubble.OnPop += new Bubble.BubbleEvent(UpdateScore);
-		
+		RisingFactsManager.OnCorrect += new RisingFactsManager.ScoreUpdate(UpdateScore);
 	}
 	void Start()
 	{
-		gameSettings = GameSettings.instance;
+		levelText.text = GameSettings.instance.PlayerLevel.ToString();
 	}
 	void OnDestroy()
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
 		RisingFactsManager.OnPlaying -= new RisingFactsManager.RoundUpdate(UIUpdate);
-		Bubble.OnPop -= new Bubble.BubbleEvent(UpdateScore);
+		RisingFactsManager.OnCorrect -= new RisingFactsManager.ScoreUpdate(UpdateScore);
 	}
 
 	// Update is called once per frame
@@ -42,22 +41,16 @@ public class RisingFactsUIManager : MonoBehaviour
 	{
 		int timer = (int)time;
 		timeText.text = timer.ToString();
-		levelText.text = gameSettings.PlayerLevel.ToString();
-			
 	}
 	
-	void UpdateScore(bool theOne)
+	void UpdateScore(int timeSaved, int numCorreect)
 	{
-		if(theOne)
-		score += 5 * gameSettings.PlayerLevel;
-		
-		correctText.text = score.ToString();
+		timeSavedText.text = timeSaved.ToString();
+		correctText.text = numCorreect.ToString();
 	}
 
 	void QuestionIn(int x, int y, int answers)
 	{
-		equationText.text = x.ToString() + " x " + y.ToString() + " = ?";
-
 		if(OnRecieved != null)
 			OnRecieved(answers);
 	}

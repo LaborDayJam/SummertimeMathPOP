@@ -7,6 +7,7 @@ public class BlowingFactory : MonoBehaviour
 
 	public delegate void PlayesrFinished(bool correct);
 	public static event PlayesrFinished OnFinised;
+
 	public GameObject 	bubbleContainer;
 	public GameObject 	spawnPosition;
 	public GameObject   bubble;
@@ -84,8 +85,8 @@ public class BlowingFactory : MonoBehaviour
 			{
 				GameObject clone = Instantiate(bubble,new Vector3(Random.Range(0f,500.0f), 100,0), Quaternion.identity)as GameObject;
 				clone.transform.SetParent(bubbleContainer.transform);
-				clone.GetComponent<BlowingBubble>().SetBubble(bubbleCount,0,false);
 				bubbleCount++;
+				clone.GetComponent<BlowingBubble>().SetBubble(bubbleCount,0,false);
 				canSpawn = false;
 				StartCoroutine("WaitToBubble");
 			}
