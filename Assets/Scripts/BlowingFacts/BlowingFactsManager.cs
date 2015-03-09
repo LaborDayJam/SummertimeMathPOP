@@ -20,6 +20,8 @@ public class BlowingFactsManager : MonoBehaviour
 	public Text				roundText;
 	private BlowingFactory  bubbleFactory;
 	private GameSettings 	gameSettings;
+	private MathGenerator	mathGen;
+	private EndMenuSaved    endMenu;
 	
 	private float 			currTimer = 0f;
 	private float 			timer = 0;
@@ -34,8 +36,8 @@ public class BlowingFactsManager : MonoBehaviour
 	public int 				playerLevel = 1;
 	public int 				roundNum = 1;
 	public int 				lastRound = 0;
-	public int 				score = 0;
-	
+	public int 				savedTime = 0;
+	public int 				numCorrect = 0;
 	
 	#endregion
 	
@@ -56,6 +58,11 @@ public class BlowingFactsManager : MonoBehaviour
 	{
 		playerLevel = gameSettings.PlayerLevel;
 		bubbleFactory = GameObject.FindGameObjectWithTag("BlowingFactory").GetComponent<BlowingFactory>();	
+		mathGen = GameObject.FindGameObjectWithTag("MathGen").GetComponent<MathGenerator>();
+		endMenu = GameObject.FindGameObjectWithTag("EndMenu").GetComponent<EndMenuSaved>();
+		mathGen.SetQuestions();
+		endMenu.NumOfCorrect = 0;
+		endMenu.SaveTime = 0;
 	}
 	
 	void RisingUpdate()
@@ -98,7 +105,7 @@ public class BlowingFactsManager : MonoBehaviour
 	{
 		if(currTimer == 0)
 		{
-			MathGenerator.instance.GetQuestions();
+			mathGen.GetQuestions();
 			bubbleFactory.canSpawn = true;
 		}
 		if(currTimer < maxRoundTime && !answered)
@@ -113,7 +120,8 @@ public class BlowingFactsManager : MonoBehaviour
 		{
 			if(currTimer <= 10 && isRight && !hasReset)
 			{
-				score++;
+				savedTime += (int)(maxRoundTime - currTimer);
+				numCorrect += 1;
 				youWin.SetActive(true);
 				bubbleFactory.canSpawn = false;
 				ResetGame();
@@ -157,7 +165,6 @@ public class BlowingFactsManager : MonoBehaviour
 			roundNum++;
 			if(roundNum < numofrounds)
 			{
-				Debug.Log("Waiting to start new round");
 				currTimer = 0;
 				answered = false;
 				hasReset = false;
@@ -166,7 +173,9 @@ public class BlowingFactsManager : MonoBehaviour
 			}
 			else
 			{
-				Debug.Log("end game here");
+				endMenu.NumOfCorrect = numCorrect;
+				endMenu.SaveTime = savedTime;
+				GameManager.instance.CurrentState = 4;
 			}
 		}
 	}
@@ -177,7 +186,7 @@ public class BlowingFactsManager : MonoBehaviour
 	
 	private void ResetGame()
 	{
-		Debug.Log("Resetting Game");
+
 		GameObject[] bubbles = GameObject.FindGameObjectsWithTag("Bubble");
 		hasReset = true;
 		// find bubbles here goin 
@@ -185,7 +194,6 @@ public class BlowingFactsManager : MonoBehaviour
 		{
 			Destroy(bubble);
 		}
-		Debug.Log("Destroyed the bubbles");
 		StartCoroutine(WaitToPop());
 	}
 	

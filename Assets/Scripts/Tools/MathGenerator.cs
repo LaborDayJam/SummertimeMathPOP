@@ -4,6 +4,7 @@ using System.Collections;
 public class MathGenerator : MonoBehaviour 
 {
 	public static MathGenerator instance;
+	
 	public delegate void QuestionOut(int x, int y, int answer);
 	public static event QuestionOut OnGetQuestion;
 
@@ -60,8 +61,7 @@ public class MathGenerator : MonoBehaviour
 		{
 			maxNum = 12;
 			minNum = 8;
-		}
-		SetQuestions(); 
+		} 
 	}
 
 	void OnDestroy()
@@ -72,6 +72,7 @@ public class MathGenerator : MonoBehaviour
 	public void GetQuestions()
 	{
 		questionCount -= 1;
+		
 		if(OnGetQuestion != null)
 			OnGetQuestion(x[questionCount],y[questionCount],answer[questionCount]);
 	}
@@ -79,6 +80,7 @@ public class MathGenerator : MonoBehaviour
 	public void SetQuestions()
 	{
 		CheckLevel();
+		
 		for( int i = 0; i < answer.Length ; i++)
 		{
 			x[i] = Random.Range(minNum,maxNum);

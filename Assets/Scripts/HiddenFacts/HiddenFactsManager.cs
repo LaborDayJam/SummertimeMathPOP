@@ -16,6 +16,8 @@ public class HiddenFactsManager : MonoBehaviour
 	public Text 			roundText;
 	private GameSettings 	gameSettings;
 	private HiddenFactory	hiddenFactory;
+	private MathGenerator	mathGen;
+	private EndMenuSaved    endMenu;
 
 	private float 			maxWaitTime = 3;
 	private float 			maxRoundTime = 10.5f;
@@ -28,8 +30,8 @@ public class HiddenFactsManager : MonoBehaviour
 	private int 			prevState = -1;
 	private int 			roundNum = 1;
 	private int 			lastRound = 0;
-	private int 			score = 0;
-	
+	private int 			savedTime = 0;
+	private int 			numCorrect = 0;
 	
 	#region Unity Functions
 	void Awake()
@@ -127,7 +129,7 @@ public class HiddenFactsManager : MonoBehaviour
 		answered = true;
 		
 		if(correct)
-			score += 5 * playerLevel;
+			savedTime += 5 * playerLevel;
 	}
 	
 	private void EndGame()
