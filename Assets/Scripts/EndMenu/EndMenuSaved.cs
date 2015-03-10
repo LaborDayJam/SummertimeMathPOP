@@ -3,8 +3,8 @@ using System.Collections;
 
 public class EndMenuSaved : MonoBehaviour 
 {
-	private int timeSaved = 0;
-	private int numCorrect = 0;
+	private int timeSaved = 35;
+	private int numCorrect = 10;
 	
 	public int SaveTime
 	{
