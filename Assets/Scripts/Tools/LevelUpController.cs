@@ -19,9 +19,6 @@ public class LevelUpController : MonoBehaviour
 	void Awake () 
 	{
 		levelGoals = new int[20];
-
-
-
 	}
 
 	void Start()
@@ -37,7 +34,7 @@ public class LevelUpController : MonoBehaviour
 	}
 	
 	// Update is called once per frame
-	void UpdateLevel () 
+	public void UpdateLevel () 
 	{
 		if(levelScore != gameSettings.PlayerPoints)
 		{

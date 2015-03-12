@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GameSettings : MonoBehaviour 
@@ -37,17 +37,7 @@ public class GameSettings : MonoBehaviour
 		else 
 			Destroy(gameObject);
 	
-		playerLevel 	= PlayerPrefs.GetInt("PlayerLevel");
-		playerPoints 	= PlayerPrefs.GetInt("PlayerPoints");
-		
-
-		if(playerLevel == 0)
-		{
-			playerLevel = 1;
-			playerPoints = 0;
-		}
-		else 
-			hasPlayed = true;
+		playerPoints = PlayerPrefs.GetInt("PlayerPoints");
 	}
 
 	void OnDestroy()
@@ -58,7 +48,6 @@ public class GameSettings : MonoBehaviour
 	#region Class Functions
 	public void SaveGame()
 	{
-		PlayerPrefs.SetInt("PlayerLevel", playerLevel);
 		PlayerPrefs.SetInt("PlayerPoints", playerPoints);
 	}
 	#endregion
