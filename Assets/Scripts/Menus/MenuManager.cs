@@ -7,7 +7,7 @@ public class MenuManager : MonoBehaviour
 	public static MenuManager instance;
 	public GameObject[]		menuPanels;
 	
-	
+	private LevelUpController levelUp;
 	private GameSettings	gameSettings;
 	private int 			menuNum = 0;  // 0 = name, 1 = mainbutons, 2 = gamemodes, 3 = options
 	private int 			lastMenu = -1;
@@ -40,6 +40,7 @@ public class MenuManager : MonoBehaviour
 	void Start () 
 	{
 		gameSettings = GameSettings.instance;
+		levelUp = GameObject.FindGameObjectWithTag("LevelController").GetComponent<LevelUpController>();
 
 	}
 
@@ -63,6 +64,7 @@ public class MenuManager : MonoBehaviour
 				menuPanels[i].SetActive(false);
 			}
 			menuPanels[0].SetActive(true);
+			levelUp.UpdateLevel();
 			break;
 		case 1:
 			for(int i = 0; i < menuPanels.Length-1; i++)

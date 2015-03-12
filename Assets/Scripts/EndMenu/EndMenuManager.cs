@@ -5,7 +5,7 @@ using System.Collections;
 public class EndMenuManager : MonoBehaviour 
 {
 	private EndMenuSaved endMenu;
-
+	private LevelUpController levelUp;
 	private int menuCount = 0;
 	private int lastCount = -1;
 	private int totalTime = 0;
@@ -26,6 +26,7 @@ public class EndMenuManager : MonoBehaviour
 	void Start () 
 	{
 		endMenu = GameObject.FindGameObjectWithTag("EndMenu").GetComponent<EndMenuSaved>();
+		levelUp = GameObject.FindGameObjectWithTag("LevelController").GetComponent<LevelUpController>();
 		totalTime = endMenu.SaveTime;
 		numCorrect = endMenu.NumOfCorrect;
 		GradeGame();
@@ -58,7 +59,7 @@ public class EndMenuManager : MonoBehaviour
 
 	private void GradeGame()
 	{
-		if(numCorrect == 10 && totalTime >= 30)
+		if(numCorrect >= 9 && totalTime >= 30)
 		{
 			gradeMultipler = 5;
 			letterGrade = "A";
@@ -87,7 +88,7 @@ public class EndMenuManager : MonoBehaviour
 
 	public void OnDone()
 	{
-
+		StartCoroutine(WaitToStart());
 	}
 
 	public void OnRestart()
@@ -97,7 +98,6 @@ public class EndMenuManager : MonoBehaviour
 
 	private IEnumerator CalTime()
 	{
-
 		while(totalTime > 0)
 		{
 			totalTime--;
@@ -134,12 +134,22 @@ public class EndMenuManager : MonoBehaviour
 		multiplierText.text = "";
 		if(gradeMultipler != 0)
 			totalPoints = (int)(totalPoints * gradeMultipler);
+
+		GameSettings.instance.PlayerPoints = totalPoints;
+		levelUp.UpdateLevel();
+
 		yield return new WaitForSeconds(1);
 			
 	}
 	private IEnumerator WaitToStart()
 	{
 		yield return new WaitForSeconds(2);
-		menuCount = 1;
+		if(menuCount == 0)
+			menuCount = 1;
+		else
+		{
+			GameSettings.instance.SaveGame();
+			Application.LoadLevel(Application.loadedLevel);
+		}
 	}
 }
