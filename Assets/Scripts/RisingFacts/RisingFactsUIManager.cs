@@ -51,6 +51,7 @@ public class RisingFactsUIManager : MonoBehaviour
 
 	void QuestionIn(int x, int y, int answers)
 	{
+		equationText.text = x.ToString() + " x " + y.ToString() + " = ?";
 		if(OnRecieved != null)
 			OnRecieved(answers);
 	}
