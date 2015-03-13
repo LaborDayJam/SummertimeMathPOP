@@ -40,7 +40,7 @@ public class MenuManager : MonoBehaviour
 	void Start () 
 	{
 		gameSettings = GameSettings.instance;
-		levelUp = GameObject.FindGameObjectWithTag("LevelController").GetComponent<LevelUpController>();
+		
 
 	}
 
@@ -64,6 +64,7 @@ public class MenuManager : MonoBehaviour
 				menuPanels[i].SetActive(false);
 			}
 			menuPanels[0].SetActive(true);
+			levelUp = GameObject.FindGameObjectWithTag("LevelController").GetComponent<LevelUpController>();
 			levelUp.UpdateLevel();
 			break;
 		case 1:

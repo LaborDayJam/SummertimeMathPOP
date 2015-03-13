@@ -12,7 +12,6 @@ public class RisingFactsUIManager : MonoBehaviour
 
 	public Text equationText;
 	public Text timeText;
-	public Text levelText;
 	public Text correctText;
 	public Text timeSavedText;
 	
@@ -25,10 +24,7 @@ public class RisingFactsUIManager : MonoBehaviour
 		RisingFactsManager.OnPlaying += new RisingFactsManager.RoundUpdate(UIUpdate);
 		RisingFactsManager.OnCorrect += new RisingFactsManager.ScoreUpdate(UpdateScore);
 	}
-	void Start()
-	{
-		levelText.text = GameSettings.instance.PlayerLevel.ToString();
-	}
+	
 	void OnDestroy()
 	{
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);

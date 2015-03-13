@@ -7,7 +7,7 @@ public class GameSettings : MonoBehaviour
 	public static GameSettings instance;
 	public bool 	hasPlayed = false;
 
-	private int 	playerLevel = 0;
+	private int 	playerLevel = 1;
 	private int 	playerPoints = 0;
 	private int 	currentDifficulty = 1;
 	#endregion
@@ -36,10 +36,14 @@ public class GameSettings : MonoBehaviour
 			instance = this;
 		else 
 			Destroy(gameObject);
-	
+		
 		playerPoints = PlayerPrefs.GetInt("PlayerPoints");
 	}
-
+	void Update()
+	{
+		if(Input.GetKeyDown(KeyCode.R))
+			PlayerPrefs.DeleteAll();
+	}
 	void OnDestroy()
 	{
 		SaveGame();
