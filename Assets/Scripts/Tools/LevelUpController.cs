@@ -61,9 +61,9 @@ public class LevelUpController : MonoBehaviour
 	void SetBar()
 	{
 		playerLevel.text = gameSettings.PlayerLevel.ToString();
-		levelPointsText.text = levelScore + "/" + levelGoals[nextLevel];
+		levelPointsText.text = levelScore + "/" + levelGoals[nextLevel-1];
 		totalPointsText.text = gameSettings.PlayerPoints.ToString();
-		float percent = (levelScore * 100) /levelGoals[nextLevel];
+		float percent = (levelScore * 100) /levelGoals[nextLevel-1];
 		levelBar.transform.localScale = new Vector3(percent/100,1,1);
 	}
 	void SetLevelGoals()

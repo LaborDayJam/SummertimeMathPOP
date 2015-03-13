@@ -12,7 +12,6 @@ public class BlowingFactsUI : MonoBehaviour
 	
 	public Text equationText;
 	public Text timeText;
-	public Text levelText;
 	public Text correctText;
 	public Text savedTimeText;
 
@@ -29,11 +28,6 @@ public class BlowingFactsUI : MonoBehaviour
 		MathGenerator.OnGetQuestion -= new MathGenerator.QuestionOut(QuestionIn);
 		BlowingFactsManager.OnPlaying -= new BlowingFactsManager.RoundUpdate(UIUpdate);
 		BlowingFactsManager.OnCorrect -= new BlowingFactsManager.ScoreUpdate(UpdateScore);
-	}
-
-	void Start()
-	{
-		levelText.text = GameSettings.instance.PlayerLevel.ToString();
 	}
 
 	// Update is called once per frame

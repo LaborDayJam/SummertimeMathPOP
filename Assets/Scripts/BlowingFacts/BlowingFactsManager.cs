@@ -123,13 +123,11 @@ public class BlowingFactsManager : MonoBehaviour
 			if(currTimer <= 10 && !hasReset && isRight)
 			{
 				youWin.SetActive(true);
-				bubbleFactory.canSpawn = false;
 				ResetGame();
 			}
 			else
 			{
 				bubbleFactory.canSpawn = false;
-				youLose.SetActive(true);
 				if(!hasReset)
 					ResetGame();
 			}
@@ -137,9 +135,8 @@ public class BlowingFactsManager : MonoBehaviour
 		else 
 		{
 			bubbleFactory.canSpawn = false;
-			if(bubbleFactory.bubbleCount > bubbleFactory.theAnswer)
-				youLose.SetActive(true);
-			else if(bubbleFactory.bubbleCount == bubbleFactory.theAnswer)
+		
+		    if(bubbleFactory.bubbleCount == bubbleFactory.theAnswer)
 				youWin.SetActive(true);
 			else 
 				youLose.SetActive(true);

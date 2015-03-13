@@ -79,7 +79,7 @@ public class BlowingFactory : MonoBehaviour
 	
 	private void SpawnBubbles()
 	{
-		if(canSpawn)
+		if(canSpawn && bubbleCount != theAnswer)
 		{	
 			if(isBlowing)
 			{
@@ -90,6 +90,11 @@ public class BlowingFactory : MonoBehaviour
 				canSpawn = false;
 				StartCoroutine("WaitToBubble");
 			}
+		}
+		else
+		{
+			canSpawn = false;
+			IsFinished();
 		}
 	}
 

@@ -12,7 +12,6 @@ public class HiddenFactsUI : MonoBehaviour {
 	
 	public Text equationText;
 	public Text timeText;
-	public Text levelText;
 	public Text correctText;
 	public Text totalSavedTimeText;
 
@@ -33,11 +32,6 @@ public class HiddenFactsUI : MonoBehaviour {
 		HiddenFactsManager.OnCorrect -= new HiddenFactsManager.ScoreUpdate(UpdateScore);
 	}
 
-	void Start()
-	{
-		levelText.text = GameSettings.instance.PlayerLevel.ToString();
-	}
-	
 	// Update is called once per frame
 	void UIUpdate (float time) 
 	{
