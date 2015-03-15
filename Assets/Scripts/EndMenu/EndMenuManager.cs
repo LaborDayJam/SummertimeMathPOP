@@ -134,9 +134,9 @@ public class EndMenuManager : MonoBehaviour
 		multiplierText.text = "";
 		if(gradeMultipler != 0)
 			totalPoints = (int)(totalPoints * gradeMultipler);
-
+		
 		GameSettings.instance.PlayerPoints += totalPoints;
-		levelUp.UpdateLevel();
+		levelUp.LevelScore += totalPoints;
 
 		yield return new WaitForSeconds(1);
 			

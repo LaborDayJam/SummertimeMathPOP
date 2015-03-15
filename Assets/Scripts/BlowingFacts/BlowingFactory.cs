@@ -91,7 +91,7 @@ public class BlowingFactory : MonoBehaviour
 				StartCoroutine("WaitToBubble");
 			}
 		}
-		else
+		else if( bubbleCount == theAnswer)
 		{
 			canSpawn = false;
 			IsFinished();

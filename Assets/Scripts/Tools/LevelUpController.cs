@@ -18,7 +18,15 @@ public class LevelUpController : MonoBehaviour
 	private int 			nextLevel = 1;
 
 
-
+	public int LevelScore
+	{
+		get{return levelScore;}
+		set
+		{
+			levelScore = value;
+			UpdateLevel();
+		}
+	}
 	// Use this for initialization
 	void Awake () 
 	{
@@ -30,7 +38,7 @@ public class LevelUpController : MonoBehaviour
 		gameSettings = GameSettings.instance;
 		SetLevelGoals();
 		UpdateLevel();
-	
+		levelScore = gameSettings.PlayerPoints;	// refreseh the score so that we have what we need;
 	}
 	void OnDestroy()
 	{
@@ -40,22 +48,16 @@ public class LevelUpController : MonoBehaviour
 	// Update is called once per frame
 	public void UpdateLevel () 
 	{
-		
-		levelScore = gameSettings.PlayerPoints;	// refreseh the score so that we have what we need;
-
-		if(levelScore > levelGoals[nextLevel-1])
+		while(levelScore > levelGoals[nextLevel-1])
 		{
 			gameSettings.PlayerLevel += 1;	// level up the player
-			levelScore = levelScore - levelGoals[nextLevel-1]; // resets score back to 0 with remainder
+			levelScore -= levelGoals[nextLevel-1]; // resets score back to 0 with remainder
 
 			nextLevel++;
 
 			if(OnLeveledUp != null)
 				OnLeveledUp();
-		}
-		else if(levelScore == 0 && gameSettings.PlayerLevel == 0)
-			gameSettings.PlayerLevel = 1;
-		
+		}		
 		SetBar();
 	}
 	void SetBar()

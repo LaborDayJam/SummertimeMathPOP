@@ -5,9 +5,10 @@ using System.Collections;
 public class ModePanel : MonoBehaviour 
 {
 	#region Class Variables
+	public GameObject   	modeLockText;
 	public Text				diffNumText;
 	public Text				gameModeText;
-
+	
 	private GameSettings 	gameSettings;
 	private MenuManager  	menuManager;
 	private string 			risingFacts = "Rising Facts";
@@ -36,7 +37,11 @@ public class ModePanel : MonoBehaviour
 		else if(modeNum < 0)
 			modeNum = 2;
 		
-		
+		if(modeNum == 2 && gameSettings.PlayerLevel < 5)
+			modeLockText.SetActive(true);
+		else 
+			modeLockText.SetActive(false);
+				
 		switch(modeNum)
 		{
 			case 0:

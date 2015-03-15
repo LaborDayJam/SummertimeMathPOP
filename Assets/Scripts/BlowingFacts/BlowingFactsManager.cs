@@ -110,11 +110,12 @@ public class BlowingFactsManager : MonoBehaviour
 			mathGen.GetQuestions();
 			bubbleFactory.canSpawn = true;
 		}
+		
+		
 		if(currTimer < maxRoundTime && !answered)
 		{
 			currTimer += Time.deltaTime;
 
-			
 			if(OnPlaying != null)
 				OnPlaying( maxRoundTime-currTimer);
 		}
